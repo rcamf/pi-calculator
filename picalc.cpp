@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -43,7 +44,7 @@ int main () {
 	thread threads[noOfThreads];
 	for (int i = 0; i < noOfThreads; ++i) {
 		threads[i] = thread(generatePoints, i, iterations);
-		this_thread::sleep_for(chrono::seconds(1));
+		this_thread::sleep_for(chrono::milliseconds(250));
 	}
 
 	for (int i = 0; i < noOfThreads; ++i) {
@@ -62,8 +63,8 @@ int main () {
 	results <<  "Iterations: " << iterations * noOfThreads << endl;
 	cout << "Sum of Points: " << sumOfPoints << endl;
 	results << "Sum of Points: " << sumOfPoints << endl;
-	cout << "Approximated Pi: " << approx_pi << endl;
-	results << "Approximated Pi: " << approx_pi << endl;
+	cout << setprecision(16) << "Approximated Pi: " << approx_pi << endl;
+	results << setprecision(16) << "Approximated Pi: " << approx_pi << endl;
 	results.close();
 
 }
