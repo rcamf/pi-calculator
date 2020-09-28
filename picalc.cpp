@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <cstdio>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -28,6 +29,11 @@ void generatePoints(int id, long long iterations) {
 		double distance = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
 		if (distance <= 0.5) 
 			++points;
+		if (i % (iterations / 10) == 0) {
+			ofstream threadFile("thread-" + to_string(id));
+			threadFile << i + 1 << "/" << iterations << ": " << points << endl;
+			threadFile.close();
+		}
 	}
 	cout << "Thread-ID: " << id	<< "; Status: Found " << points << " points in " << iterations << " iterations" << endl;
 	pointsPerThread.push_back(points);
@@ -47,18 +53,15 @@ int main () {
 		this_thread::sleep_for(chrono::milliseconds(250));
 	}
 
-	for (int i = 0; i < noOfThreads; ++i) {
+	for (int i = 0; i < noOfThreads; ++i)
 		threads[i].join();
-	}	
 
 	unsigned long long sumOfPoints = 0;
-	for (auto i = pointsPerThread.begin(); i != pointsPerThread.end(); ++i) {
+	for (auto i = pointsPerThread.begin(); i != pointsPerThread.end(); ++i)
 		sumOfPoints += *i;
-	}
 	long double approx_pi = 4.0 * sumOfPoints / (iterations * noOfThreads);
-	ostringstream filename;
-	filename << "results-" << chrono::high_resolution_clock::now().time_since_epoch().count() << ".txt";
-	ofstream results(filename.str().c_str());
+	
+	ofstream results("results-" + to_string(chrono::high_resolution_clock::now().time_since_epoch().count()) + ".txt");
 	cout << "Iterations: " << iterations * noOfThreads << endl;
 	results <<  "Iterations: " << iterations * noOfThreads << endl;
 	cout << "Sum of Points: " << sumOfPoints << endl;
@@ -66,5 +69,7 @@ int main () {
 	cout << setprecision(16) << "Approximated Pi: " << approx_pi << endl;
 	results << setprecision(16) << "Approximated Pi: " << approx_pi << endl;
 	results.close();
-
+		
+	for (int i = 0; i < noOfThreads; ++i) 
+		remove(("thread-" + to_string(i)).c_str());
 }
