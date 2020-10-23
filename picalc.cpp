@@ -10,6 +10,7 @@
 #include <random>
 #include <limits>
 #include <chrono>
+#include <ctime>
 #include <vector>
 using namespace std;
 
@@ -31,7 +32,9 @@ void generatePoints(int id, long long iterations) {
 			++points;
 		if (i % (iterations / 10) == 0) {
 			ofstream threadFile("thread-" + to_string(id));
-			threadFile << i + 1 << "/" << iterations << ": " << points << endl;
+			time_t currentTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
+			tm *tmLocal = localtime(&currentTime);
+			threadFile << put_time(tmLocal, "%c") << ": " << i + 1 << "/" << iterations << ": " << points << endl;
 			threadFile.close();
 		}
 	}
